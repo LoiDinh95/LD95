@@ -13,6 +13,12 @@ namespace LDElitechReader
                 SelfTest.Run();
                 return;
             }
+            if (args != null && Array.Exists(args, a => a == "--idle-test"))
+            {
+                IdleTest.Run();
+                return;
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += (s, e) => MessageBox.Show(e.Exception.Message, "LD Elitech Reader", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -42,6 +48,29 @@ namespace LDElitechReader
             d.StartTime = d.FirstReading;
             d.StopTime = d.LastReading;
             ElitechPdfExporter.Write("selftest_rc5.pdf", d);
+        }
+    }
+
+    internal static class IdleTest
+    {
+        public static void Run()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            var form = new MainForm();
+            int heartbeats = 0;
+            var heartbeat = new Timer { Interval = 1000 };
+            heartbeat.Tick += (s, e) => heartbeats++;
+            var stop = new Timer { Interval = 70000 };
+            stop.Tick += (s, e) => {
+                stop.Stop();
+                heartbeat.Stop();
+                if (heartbeats < 60) Environment.ExitCode = 3;
+                form.Close();
+            };
+            form.Shown += (s, e) => { heartbeat.Start(); stop.Start(); };
+            Application.Run(form);
+            if (heartbeats < 60) throw new InvalidOperationException("UI heartbeat stalled: " + heartbeats);
         }
     }
 }
