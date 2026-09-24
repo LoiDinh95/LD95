@@ -57,6 +57,14 @@ namespace LDElitechReader
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.ThreadException += (s, e) => {
+                try { System.IO.File.WriteAllText("idle_test_error.txt", e.Exception.ToString()); } catch { }
+                Environment.Exit(9);
+            };
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => {
+                try { System.IO.File.WriteAllText("idle_test_error.txt", Convert.ToString(e.ExceptionObject)); } catch { }
+            };
             var form = new MainForm();
             int heartbeats = 0;
             var heartbeat = new Timer { Interval = 1000 };
