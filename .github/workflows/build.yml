@@ -21,6 +21,16 @@ jobs:
           $p = Start-Process -FilePath $exe.FullName -ArgumentList "--selftest" -Wait -PassThru
           if ($p.ExitCode -ne 0) { throw "Selftest exited $($p.ExitCode)" }
           if (-not (Test-Path selftest_rc5.pdf)) { throw "Selftest PDF not generated" }
+      - name: 70-second idle WinForms responsiveness test
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem src/bin/Release -Recurse -Filter LD_Elitech_Reader_v0.8.exe | Select-Object -First 1
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList "--idle-test" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Idle test exited $($p.ExitCode)" }
+      - name: Package build artifact
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem src/bin/Release -Recurse -Filter LD_Elitech_Reader_v0.8.exe | Select-Object -First 1
           New-Item -ItemType Directory -Force artifact | Out-Null
           Copy-Item $exe.FullName artifact/LD_Elitech_Reader_v0.8.exe
           Copy-Item selftest_rc5.pdf artifact/selftest_rc5.pdf
