@@ -1,0 +1,32 @@
+name: build-v08
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build .NET Framework 4.8
+        shell: pwsh
+        run: |
+          dotnet build src/LD_Elitech_Reader_v0.8.csproj -c Release
+      - name: Locate EXE and run PDF self-test
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem src/bin/Release -Recurse -Filter LD_Elitech_Reader_v0.8.exe | Select-Object -First 1
+          if (-not $exe) { throw "EXE not found" }
+          & $exe.FullName --selftest
+          if (-not (Test-Path selftest_rc5.pdf)) { throw "Selftest PDF not generated" }
+          New-Item -ItemType Directory -Force artifact | Out-Null
+          Copy-Item $exe.FullName artifact/LD_Elitech_Reader_v0.8.exe
+          Copy-Item selftest_rc5.pdf artifact/selftest_rc5.pdf
+          Get-FileHash artifact/LD_Elitech_Reader_v0.8.exe -Algorithm SHA256 | Out-File artifact/SHA256.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LD-Elitech-v0.8-build
+          path: artifact
+          if-no-files-found: error
