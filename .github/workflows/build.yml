@@ -26,7 +26,10 @@ jobs:
         run: |
           $exe = Get-ChildItem src/bin/Release -Recurse -Filter LD_Elitech_Reader_v0.8.exe | Select-Object -First 1
           $p = Start-Process -FilePath $exe.FullName -ArgumentList "--idle-test" -Wait -PassThru
-          if ($p.ExitCode -ne 0) { throw "Idle test exited $($p.ExitCode)" }
+          if ($p.ExitCode -ne 0) {
+            if (Test-Path idle_test_error.txt) { Get-Content idle_test_error.txt }
+            throw "Idle test exited $($p.ExitCode)"
+          }
       - name: Package build artifact
         shell: pwsh
         run: |
