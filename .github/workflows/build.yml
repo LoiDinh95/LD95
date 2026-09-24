@@ -18,7 +18,8 @@ jobs:
         run: |
           $exe = Get-ChildItem src/bin/Release -Recurse -Filter LD_Elitech_Reader_v0.8.exe | Select-Object -First 1
           if (-not $exe) { throw "EXE not found" }
-          & $exe.FullName --selftest
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList "--selftest" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Selftest exited $($p.ExitCode)" }
           if (-not (Test-Path selftest_rc5.pdf)) { throw "Selftest PDF not generated" }
           New-Item -ItemType Directory -Force artifact | Out-Null
           Copy-Item $exe.FullName artifact/LD_Elitech_Reader_v0.8.exe
