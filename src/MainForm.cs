@@ -123,8 +123,8 @@ namespace LDElitechReader
             var results = new Panel { Dock=DockStyle.Fill, BackColor=Color.White, Padding=new Padding(4,0,4,4) };
             root.Controls.Add(results,0,2);
 
-            splitOuter.Dock=DockStyle.Fill; splitOuter.Orientation=Orientation.Vertical; splitOuter.SplitterWidth=6; splitOuter.BackColor=Color.FromArgb(225,228,232); splitOuter.Panel1MinSize=230; splitOuter.Panel2MinSize=500;
-            splitInner.Dock=DockStyle.Fill; splitInner.Orientation=Orientation.Vertical; splitInner.SplitterWidth=6; splitInner.BackColor=Color.FromArgb(225,228,232); splitInner.Panel1MinSize=220; splitInner.Panel2MinSize=350;
+            splitOuter.Dock=DockStyle.Fill; splitOuter.Orientation=Orientation.Vertical; splitOuter.SplitterWidth=6; splitOuter.BackColor=Color.FromArgb(225,228,232);
+            splitInner.Dock=DockStyle.Fill; splitInner.Orientation=Orientation.Vertical; splitInner.SplitterWidth=6; splitInner.BackColor=Color.FromArgb(225,228,232);
             results.Controls.Add(splitOuter); splitOuter.Panel2.Controls.Add(splitInner);
 
             BuildZone(splitOuter.Panel1, zone1Title, "THÔNG TIN THIẾT BỊ", infoGrid);
@@ -310,8 +310,8 @@ namespace LDElitechReader
         private void ApplySavedLayout()
         {
             try{
-                int w=splitOuter.ClientSize.Width;if(w>0)splitOuter.SplitterDistance=Math.Max(splitOuter.Panel1MinSize,Math.Min(w-splitOuter.Panel2MinSize,(int)(w*split1Ratio)));
-                int w2=splitInner.ClientSize.Width;if(w2>0)splitInner.SplitterDistance=Math.Max(splitInner.Panel1MinSize,Math.Min(w2-splitInner.Panel2MinSize,(int)(w2*split2Ratio)));
+                int w=splitOuter.ClientSize.Width;if(w>100)splitOuter.SplitterDistance=Math.Max(80,Math.Min(w-120,(int)(w*split1Ratio)));
+                int w2=splitInner.ClientSize.Width;if(w2>100)splitInner.SplitterDistance=Math.Max(80,Math.Min(w2-120,(int)(w2*split2Ratio)));
             }catch{}
             ApplyZoom();
         }
